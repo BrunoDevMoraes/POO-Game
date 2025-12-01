@@ -1,0 +1,269 @@
+/* Fonts base */
+body {
+  font-family: 'Roboto Mono', monospace;
+  overflow: hidden; /* Evita scrollbars das telas cheias */
+}
+.pixel-font {
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Health bar */
+.health-bar-container {
+  background-color: #4a5568;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 2px solid #2d3748;
+}
+.health-bar {
+  background-color: #48bb78;
+  height: 100%;
+  transition: width 0.5s ease-in-out;
+  text-shadow: 1px 1px 2px black;
+}
+.health-bar.low {
+  background-color: #f56565;
+}
+
+/* Editor e log */
+.code-editor {
+  background-color: #1a202c;
+  color: #a0aec0;
+  border: 2px solid #4a5568;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+}
+.battle-log {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 2px solid #4a5568;
+  height: 120px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  padding: 8px;
+  color: #c8ffc8;
+}
+
+/* Botões estilo NES */
+.nes-btn {
+  position: relative;
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: #212529;
+  background: #fff;
+  border: 2px solid #212529;
+  box-shadow: 4px 4px 0px #212529;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.nes-btn:hover:not(:disabled) {
+  box-shadow: 2px 2px 0px #212529;
+  transform: translate(2px, 2px);
+}
+.nes-btn:active:not(:disabled) {
+  box-shadow: 0px 0px 0px #212529;
+  transform: translate(4px, 4px);
+}
+.nes-btn.is-primary {
+  background: #209cee;
+  color: white;
+}
+.nes-btn.is-success {
+  background: #92cc41;
+  color: white;
+}
+.nes-btn.is-warning {
+  background: #f7b538;
+  color: white;
+}
+.nes-btn.is-danger {
+  background: #e76e55;
+  color: white;
+}
+.nes-btn.is-disabled {
+  background: #a0aec0;
+  color: #4a5568;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.attack-btn {
+  background: #f7b538;
+  color: #212529;
+  border-color: #212529;
+  box-shadow: 4px 4px 0px #212529;
+}
+.attack-btn:hover:not(:disabled) {
+  background: #f7b538;
+}
+
+/* Animações de Batalha */
+.monster-sprite {
+  transition: transform 0.2s ease-in-out;
+  /* Ajustes para Imagem */
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 1rem auto; /* Centraliza */
+}
+.attacking-player {
+  transform: translateX(30px) scale(1.1);
+}
+.attacking-enemy {
+  transform: translateX(-30px) scale(1.1);
+}
+.hit {
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+/* --- NOVOS ESTILOS --- */
+
+/* Telas de Overlay (Start, Map, Ally) */
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 24, 39, 0.95); /* bg-gray-900 com opacidade */
+  z-index: 50; /* Camada base para overlays */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Modais devem aparecer SOBRE a tela de mapa (que também é um overlay) */
+#start-screen,
+#ally-modal,
+#item-quiz-modal,
+#win-screen {
+  z-index: 60; /* Camada mais alta para modais */
+}
+
+/* Cartões de Seleção de POOketmon */
+.pooket-card {
+  background-color: #374151; /* bg-gray-700 */
+  border: 4px solid #4a5568; /* border-gray-600 */
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.1);
+}
+.pooket-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  border-color: #f7b538; /* is-warning color */
+}
+/* Ajuste para imagens na seleção */
+.pooket-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+/* Tela de Mapa Interativo */
+#map-grid {
+  display: grid;
+  border: 4px solid #4a5568;
+  background: #2d3748; /* bg-gray-700 */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out; /* Anima a mudança de tamanho da sala */
+}
+/* --- MUDANÇA: Aumentado tamanho dos tiles --- */
+.map-tile {
+  width: 50px; /* Aumentado de 40px para 50px */
+  height: 50px; /* Aumentado de 40px para 50px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem; /* Aumentado de 1.75rem para 2.2rem */
+  line-height: 1;
+  background-color: #5d6573; /* Cor de chão de sala/caverna */
+  transition: all 0.1s;
+}
+.map-tile.player {
+  font-size: 2rem; /* Aumentado de 1.5rem */
+}
+.map-tile.wall {
+  background-color: #374151; /* Parede mais escura */
+  font-size: 2.2rem;
+}
+.map-tile.enemy {
+  filter: drop-shadow(0 0 5px #e76e55);
+}
+.map-tile.ally {
+  filter: drop-shadow(0 0 5px #fff);
+}
+.map-tile.scientist {
+  filter: drop-shadow(0 0 6px #34d399); /* Brilho verde */
+}
+.map-tile.goal {
+  filter: drop-shadow(0 0 8px #f7b538);
+}
+.map-tile.item-health {
+  filter: drop-shadow(0 0 6px #3498db); /* Brilho Azul */
+}
+.map-tile.item-strength {
+  filter: drop-shadow(0 0 6px #f1c40f); /* Brilho Amarelo/Laranja */
+}
+.map-tile.door {
+  font-size: 2rem;
+  background-color: #4a5568;
+}
+
+/* Modal do Aliado */
+#ally-modal,
+#item-quiz-modal {
+  /* Aplicando estilo a ambos os modais */
+  background-color: #1f2937; /* bg-gray-800 */
+  border: 4px solid #4a5568;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  /* max-width removido nos IDs específicos abaixo, mas mantido estilo base */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo específico para botões de opção do quiz */
+#quiz-options .nes-btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+#quiz-options .nes-btn.is-correct {
+  background: #92cc41; /* Verde (sucesso) */
+}
+#quiz-options .nes-btn.is-incorrect {
+  background: #e76e55; /* Vermelho (danger) */
+  color: white;
+}
+
+/* NOVO: Esconde a arena no modo de criação */
+.game-screen-creation-mode #battle-arena-panel {
+  display: none;
+}
