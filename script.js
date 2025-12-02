@@ -141,14 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // 5. Agora, fora da classe, você precisa "construir" o seu monstro.
 //    Declare uma variável chamada 'meuMonstro'.
 
-// 6. Atribua a ela uma *nova instância* da sua classe Monstro.
-//    Passe os valores do seu ${pooket.name}:
+// 6. Atribua a ela uma *nova instância* da sua classe Monstro por meio de *new Monstro(...)*
+//    No lugar de ... passe os valores do seu ${pooket.name}:
 //    - Nome: "${pooket.name}"
 //    - Vida: ${pooket.baseHealth} (Deve estar entre 70 e 100)
 //    - Ataques (Defina APENAS UM ataque com dano entre 15 e 20):
 //      [ { nome: "${pooket.attacks[0].name}", dano: ${pooket.attacks[0].dano} } ]
-//    Exemplo.: const meuMonstro = new Monstro(...)
-//      No lugar de *...* coloque os argumentos corretos
 
 // Boa sorte, programador!
 
@@ -401,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const TILE_ICONS = {
     W: '🧱',
     _: '',
-    P: '🧑‍🎓', // Mantido como solicitado
+    P: '🥸',
     C: '🏰',
     D: '🚪',
     S: '👨‍🔬',
