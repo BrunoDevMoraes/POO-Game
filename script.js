@@ -49,9 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentLevel = 0;
   let playerMonster, enemyMonster;
   let chosenPooketmonData = null; // Inicia como nulo
-  let isCreationMode = false; // NOVO: Controla a tela de criação
-  let savedCreationCode = null; // NOVO: Armazena o código do Nível 0
-  let pooketmonCreated = false; // NOVO: Flag para saber se o POOketmon foi validado com sucesso
+  let isCreationMode = false; // Controla a tela de criação
+  let savedCreationCode = null; // Armazena o código do Nível 0
+  let savedLevel2Code = null; // Armazena o rascunho do Nível 2 (Métodos)
+  let savedLevel3Code = null; // Armazena o rascunho do Nível 3 (Herança)
+  let savedLevel4Code = null; // Armazena o rascunho do Nível 4 (Polimorfismo)
+  let pooketmonCreated = false; // Flag para saber se o POOketmon foi validado com sucesso
 
   // --- Variáveis para Rastrear Bônus de Itens ---
   let accumulatedHpBonus = 0;
@@ -180,13 +183,15 @@ document.addEventListener('DOMContentLoaded', () => {
           pooket.evolutionName
         } que estende (extends) a classe Monstro.\n// 2. No constructor, use super(nome, ${
           pooket.baseHealth + 50
-        }, [...]) para passar a vida e ataque.\n// 3. O atributo ataques é um array (lista), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque(nome, dano)\n//    (Novos ataques sugeridos: ${pooket.evolutionAttacks
+        }, [...]) para passar a vida e ataque. No lugar de ... passe os ataques já existentes; \n// 3. O atributo ataques é um array (lista), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque(nome, dano)\n//    (Novos ataques sugeridos: ${pooket.evolutionAttacks
           .map((a) => a.name)
-          .join(', ')})\n// 4. Crie a instância: const meuMonstro = new ${
+          .join(
+            ', '
+          )})\n// 4. Crie a instância da evolução: const meuMonstroEvoluido = new ${
           pooket.evolutionName
         }("${
           pooket.evolutionName
-        }");\n// 5. Utilize meuMonstro.adicionaAtaque("Ataque Especial", 40);\n`,
+        }");\n// 5. Utilize meuMonstroEvoluido.adicionaAtaque("Ataque Especial", 40);\n// LEMBRETE: Para acessar um atributo use *this.atributo*;`,
       enemyCode: `new Monstro("Britadorix", 200, [{ nome: "Racha Crânio", dano: 40 }])`,
       enemySprite: 'assets/inimigo3_pedra.png', // <-- CAMINHO DO ARQUIVO
       validation: (player) => {
@@ -198,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (!player.ataques || player.ataques.length < 2) {
           throw new Error(
-            'Você não adicionou o novo ataque na instância! Use o método que você criou (ex: meuMonstro.addMove(...)).'
+            'Você não adicionou o novo ataque na instância! Use o método que você criou (ex: meuMonstroEvoluido.addMove(...)).'
           );
         }
         return true;
@@ -212,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Polimorfismo! Sua evolução ganhou um poder vampírico. Vá até a classe `${pooket.evolutionName}`, sobrescreva o método `atacar` para causar dano E curar seu monstro em 50% do dano causado.',
       starterCodeTemplate: (pooket) =>
         `// 1. Encontre a classe ${pooket.evolutionName} no seu código acima.\n// 2. Dentro dela, escreva o método atacar(alvo, ataqueEscolhido).\n// 3. Implemente a lógica: reduza a vida do alvo (dano normal) e aumente a sua vida (this.vida) em metade do dano.\n`,
-      enemyCode: `new Monstro("Phantom", 180, [{ nome: "Soco Fantasma", dano: 50 }])`,
+      enemyCode: `new Monstro("Phantom", 250, [{ nome: "Soco Fantasma", dano: 60 }])`,
       enemySprite: 'assets/inimigo4_fantasma.png', // <-- CAMINHO DO ARQUIVO
       validation: (player) => {
         if (player.vida <= 0) return false;
@@ -505,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function initializeMap() {
     // Mantém sempre o ícone de estudante no mapa
-    TILE_ICONS['P'] = '🧑‍🎓';
+    TILE_ICONS['P'] = '🥸';
 
     // Limpa o 'P' estático da sala inicial
     ROOM_DATA[currentRoomId].layout[playerPosition.y][playerPosition.x] = '_';
@@ -888,7 +893,8 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error("A instância não foi criada com 'new Monstro(...)'.");
       }
 
-      const fullPlayerCode = `${playerCode}; return meuMonstro;`;
+      // CORREÇÃO: Adicionado \n antes de return para evitar comentários quebrando o código
+      const fullPlayerCode = `${playerCode}\nreturn meuMonstro;`;
       const playerFactory = new Function(fullPlayerCode);
       const testMonster = playerFactory();
 
@@ -971,13 +977,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const level = levels[currentLevel];
     try {
       const playerCode = codeEditor.value;
-      const fullPlayerCode = `${playerCode}; return meuMonstro;`;
+
+      // --- MUDANÇA: Definição dinâmica do nome da variável de instância ---
+      let instanceVarName = 'meuMonstro';
+      if (currentLevel >= 2) {
+        // Níveis 3 e 4 (Herança e Polimorfismo)
+        instanceVarName = 'meuMonstroEvoluido';
+      }
+      // --------------------------------------------------------------------
+
+      // CORREÇÃO: Adicionado \n antes de return para evitar comentários quebrando o código
+      const fullPlayerCode = `${playerCode}\nreturn ${instanceVarName};`;
       const playerFactory = new Function(fullPlayerCode);
       playerMonster = playerFactory();
 
       if (!playerMonster) {
         throw new Error(
-          "A variável 'meuMonstro' está indefinida. Certifique-se de criar uma instância: 'const meuMonstro = new SuaClasse(...);'"
+          `A variável '${instanceVarName}' está indefinida. Certifique-se de criar uma instância: 'const ${instanceVarName} = new SuaClasse(...);'`
         );
       }
 
@@ -1318,7 +1334,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let codeToLoad = level.starterCodeTemplate(chosenPooketmonData);
 
-    if (savedCreationCode && levelIndex > 0) {
+    // --- LÓGICA DE RESTAURAÇÃO DE RASCUNHO (TODOS OS NÍVEIS) ---
+
+    // Nível 2: Métodos com Parâmetros
+    if (levelIndex === 1 && savedLevel2Code) {
+      codeToLoad = savedLevel2Code;
+      logMessage('Seu código do Nível 2 (Métodos) foi restaurado.', 'info');
+    }
+    // Nível 3: Herança
+    else if (levelIndex === 2 && savedLevel3Code) {
+      codeToLoad = savedLevel3Code;
+      logMessage('Seu código do Nível 3 (Herança) foi restaurado.', 'info');
+    }
+    // Nível 4: Polimorfismo
+    else if (levelIndex === 3 && savedLevel4Code) {
+      codeToLoad = savedLevel4Code;
+      logMessage(
+        'Seu código do Nível 4 (Polimorfismo) foi restaurado.',
+        'info'
+      );
+    }
+    // Caso padrão: Reconstrói a partir do Nível 0 se não houver rascunho específico
+    else if (savedCreationCode && levelIndex > 0) {
       let cleanCode = savedCreationCode;
 
       const lv0HeaderRegex =
@@ -1330,28 +1367,41 @@ document.addEventListener('DOMContentLoaded', () => {
         "// DICA: Acesse a vida usando 'alvo.vida' e o dano usando 'ataqueEscolhido.dano'.",
       ];
 
-      let oldInstructionsLv3 = [];
-      if (levelIndex > 2 && chosenPooketmonData) {
-        const p = chosenPooketmonData;
-        oldInstructionsLv3 = [
-          `// 1. Crie a classe ${p.evolutionName} que estende (extends) a classe Monstro.`,
-          `// 2. No constructor, use super(nome, ${
-            p.baseHealth + 50
-          }, [...]) para passar a vida e ataque. No lugar de ... passe os ataques já existentes;`,
-          `// 3. O atributo ataques é um array (lista), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque(nome, dano)`,
-          `//    (Novos ataques sugeridos: ${p.evolutionAttacks
-            .map((a) => a.name)
-            .join(', ')})`,
-          `// 4. Crie a instância: const meuMonstro = new ${p.evolutionName}("${p.evolutionName}");`,
-          `// 5. Utilize meuMonstro.adicionaAtaque("Ataque Especial", 40);`,
-          `// LEMBRETE: Para acessar um atributo use *this.atributo*`,
-        ];
+      // --- MUDANÇA: Limpeza robusta com Regex para o Nível 3 ---
+      if (levelIndex > 2) {
+        // Remove instruções do Nível 3 (Herança) independentemente dos valores numéricos
+        cleanCode = cleanCode.replace(
+          /\/\/ 1\. Crie a classe .*? que estende \(extends\) a classe Monstro\..*?\n/g,
+          ''
+        );
+        cleanCode = cleanCode.replace(
+          /\/\/ 2\. No constructor, use super\(nome, \d+, \[\.\.\.\]\) para passar a vida e ataque\..*?\n/g,
+          ''
+        );
+        cleanCode = cleanCode.replace(
+          /\/\/ 3\. O atributo ataques é um array \(lista\), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque\(nome, dano\).*?\n/g,
+          ''
+        );
+        cleanCode = cleanCode.replace(
+          /\/\/    \(Novos ataques sugeridos: .*?\).*?\n/g,
+          ''
+        );
+        cleanCode = cleanCode.replace(
+          /\/\/ 4\. Crie a instância da evolução: const meuMonstroEvoluido = new .*?\n/g,
+          ''
+        );
+        cleanCode = cleanCode.replace(
+          /\/\/ 5\. Utilize meuMonstroEvoluido\.adicionaAtaque\("Ataque Especial", \d+\);.*?\n/g,
+          ''
+        );
+        cleanCode = cleanCode.replace(
+          /\/\/ LEMBRETE: Para acessar um atributo use \*this\.atributo\*.*?\n/g,
+          ''
+        );
       }
+      // ---------------------------------------------------------
 
-      const allInstructionsToRemove = [
-        ...oldInstructionsLv2,
-        ...oldInstructionsLv3,
-      ];
+      const allInstructionsToRemove = [...oldInstructionsLv2];
 
       allInstructionsToRemove.forEach((instr) => {
         cleanCode = cleanCode.split(instr).join('');
@@ -1487,6 +1537,18 @@ document.addEventListener('DOMContentLoaded', () => {
       isCreationMode = false;
       logMessage('Código salvo. Voltando ao mapa...', 'info');
     }
+    // --- LÓGICA DE SALVAR RASCUNHOS (Níveis 2, 3 e 4) ---
+    else if (currentLevel === 1) {
+      savedLevel2Code = codeEditor.value;
+      logMessage('Rascunho do Nível 2 salvo. Voltando ao mapa...', 'info');
+    } else if (currentLevel === 2) {
+      savedLevel3Code = codeEditor.value;
+      logMessage('Rascunho do Nível 3 salvo. Voltando ao mapa...', 'info');
+    } else if (currentLevel === 3) {
+      savedLevel4Code = codeEditor.value;
+      logMessage('Rascunho do Nível 4 salvo. Voltando ao mapa...', 'info');
+    }
+    // ----------------------------------------------------
     showMapScreenFromGame();
   });
   allyPrevBtn.addEventListener('click', () => {
