@@ -146,9 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
 //    - Nome: "${pooket.name}"
 //    - Vida: ${pooket.baseHealth} (Deve estar entre 70 e 100)
 //    - Ataques (Defina APENAS UM ataque com dano entre 15 e 20):
-//      [
-//        { nome: "${pooket.attacks[0].name}", dano: ${pooket.attacks[0].dano} }
-//      ]
+//      [ { nome: "${pooket.attacks[0].name}", dano: ${pooket.attacks[0].dano} } ]
+//    Exemplo.: const meuMonstro = new Monstro(...)
+//      No lugar de *...* coloque os argumentos corretos
 
 // Boa sorte, programador!
 
