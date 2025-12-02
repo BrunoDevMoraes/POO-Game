@@ -1337,7 +1337,7 @@ document.addEventListener('DOMContentLoaded', () => {
           `// 1. Crie a classe ${p.evolutionName} que estende (extends) a classe Monstro.`,
           `// 2. No constructor, use super(nome, ${
             p.baseHealth + 50
-          }, [...]) para passar a vida e ataque.`,
+          }, [...]) para passar a vida e ataque. No lugar de ... passe os ataques já existentes;`,
           `// 3. O atributo ataques é um array (lista), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque(nome, dano)`,
           `//    (Novos ataques sugeridos: ${p.evolutionAttacks
             .map((a) => a.name)
