@@ -1344,6 +1344,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .join(', ')})`,
           `// 4. Crie a instância: const meuMonstro = new ${p.evolutionName}("${p.evolutionName}");`,
           `// 5. Utilize meuMonstro.adicionaAtaque("Ataque Especial", 40);`,
+          `// LEMBRETE: Para acessar um atributo use *this.atributo*`,
         ];
       }
 
