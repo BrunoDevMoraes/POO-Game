@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pooket.evolutionName
         } que estende (extends) a classe Monstro.\n// 2. No constructor, use super(nome, ${
           pooket.baseHealth + 50
-        }, [...]) para passar a vida e ataque. No lugar de ... passe os ataques já existentes; \n// 3. O atributo ataques é um array (lista), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque(nome, dano)\n//    (Novos ataques sugeridos: ${pooket.evolutionAttacks
+        }, [...]) para passar a vida e ataque.\n// 3. O atributo ataques é um array (lista), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque(nome, dano)\n//    (Novos ataques sugeridos: ${pooket.evolutionAttacks
           .map((a) => a.name)
           .join(
             ', '
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pooket.evolutionName
         }("${
           pooket.evolutionName
-        }");\n// 5. Utilize meuMonstroEvoluido.adicionaAtaque("Ataque Especial", 40);\n// LEMBRETE: Para acessar um atributo use *this.atributo*;`,
+        }");\n// 5. Utilize meuMonstroEvoluido.adicionaAtaque("Ataque Especial", 40);\n`,
       enemyCode: `new Monstro("Britadorix", 200, [{ nome: "Racha Crânio", dano: 40 }])`,
       enemySprite: 'assets/inimigo3_pedra.png', // <-- CAMINHO DO ARQUIVO
       validation: (player) => {
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Polimorfismo! Sua evolução ganhou um poder vampírico. Vá até a classe `${pooket.evolutionName}`, sobrescreva o método `atacar` para causar dano E curar seu monstro em 50% do dano causado.',
       starterCodeTemplate: (pooket) =>
         `// 1. Encontre a classe ${pooket.evolutionName} no seu código acima.\n// 2. Dentro dela, escreva o método atacar(alvo, ataqueEscolhido).\n// 3. Implemente a lógica: reduza a vida do alvo (dano normal) e aumente a sua vida (this.vida) em metade do dano.\n`,
-      enemyCode: `new Monstro("Phantom", 250, [{ nome: "Soco Fantasma", dano: 60 }])`,
+      enemyCode: `new Monstro("Phantom", 180, [{ nome: "Soco Fantasma", dano: 50 }])`,
       enemySprite: 'assets/inimigo4_fantasma.png', // <-- CAMINHO DO ARQUIVO
       validation: (player) => {
         if (player.vida <= 0) return false;
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const TILE_ICONS = {
     W: '🧱',
     _: '',
-    P: '🥸',
+    P: '😎',
     C: '🏰',
     D: '🚪',
     S: '👨‍🔬',
@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function initializeMap() {
     // Mantém sempre o ícone de estudante no mapa
-    TILE_ICONS['P'] = '🥸';
+    // TILE_ICONS['P'] = '🧑‍🎓'; // Removido para usar '🥸'
 
     // Limpa o 'P' estático da sala inicial
     ROOM_DATA[currentRoomId].layout[playerPosition.y][playerPosition.x] = '_';
@@ -1358,58 +1358,66 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (savedCreationCode && levelIndex > 0) {
       let cleanCode = savedCreationCode;
 
-      const lv0HeaderRegex =
-        /\/\/ Olá, .*! Bem-vindo ao laboratório\.[\s\S]*?\/\/ Boa sorte, programador!\s*/;
-      cleanCode = cleanCode.replace(lv0HeaderRegex, '');
-
-      const oldInstructionsLv2 = [
-        '// ADICIONE O MÉTODO atacar(alvo, ataqueEscolhido) DENTRO DA CLASSE Monstro',
-        "// DICA: Acesse a vida usando 'alvo.vida' e o dano usando 'ataqueEscolhido.dano'.",
+      // Lista de assinaturas de comentários de instrução para remover
+      const instructionSignatures = [
+        'Olá, ',
+        'Bem-vindo ao laboratório.',
+        'Para criar um POOketmon, precisamos',
+        '1. Declare uma nova classe',
+        '2. Toda classe precisa',
+        'O nosso deve aceitar',
+        '3. Dentro do constructor',
+        "Use 'this' para guardar",
+        '4. Também precisamos de um',
+        "- 'vidaMaxima'",
+        "(O 'sprite' será",
+        '5. Agora, fora da classe',
+        'Declare uma variável chamada',
+        '6. Atribua a ela uma',
+        'No lugar de ... passe',
+        '- Nome:',
+        '- Vida:',
+        '- Ataques (Defina',
+        'Boa sorte, programador!',
+        'ADICIONE O MÉTODO',
+        'DICA: Acesse a vida',
+        '1. Crie a classe',
+        'que estende (extends)',
+        '2. No constructor, use super',
+        '3. O atributo ataques é um array',
+        '(Novos ataques sugeridos',
+        '4. Crie a instância da evolução',
+        '5. Utilize meuMonstroEvoluido',
+        'LEMBRETE: Para acessar',
+        '1. Encontre a classe',
+        'no seu código acima',
+        '2. Dentro dela, escreva o método',
+        '3. Implemente a lógica',
       ];
 
-      // --- MUDANÇA: Limpeza robusta com Regex para o Nível 3 ---
-      if (levelIndex > 2) {
-        // Remove instruções do Nível 3 (Herança) independentemente dos valores numéricos
-        cleanCode = cleanCode.replace(
-          /\/\/ 1\. Crie a classe .*? que estende \(extends\) a classe Monstro\..*?\n/g,
-          ''
-        );
-        cleanCode = cleanCode.replace(
-          /\/\/ 2\. No constructor, use super\(nome, \d+, \[\.\.\.\]\) para passar a vida e ataque\..*?\n/g,
-          ''
-        );
-        cleanCode = cleanCode.replace(
-          /\/\/ 3\. O atributo ataques é um array \(lista\), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque\(nome, dano\).*?\n/g,
-          ''
-        );
-        cleanCode = cleanCode.replace(
-          /\/\/    \(Novos ataques sugeridos: .*?\).*?\n/g,
-          ''
-        );
-        cleanCode = cleanCode.replace(
-          /\/\/ 4\. Crie a instância da evolução: const meuMonstroEvoluido = new .*?\n/g,
-          ''
-        );
-        cleanCode = cleanCode.replace(
-          /\/\/ 5\. Utilize meuMonstroEvoluido\.adicionaAtaque\("Ataque Especial", \d+\);.*?\n/g,
-          ''
-        );
-        cleanCode = cleanCode.replace(
-          /\/\/ LEMBRETE: Para acessar um atributo use \*this\.atributo\*.*?\n/g,
-          ''
-        );
-      }
-      // ---------------------------------------------------------
+      const lines = cleanCode.split('\n');
+      const filteredLines = lines.filter((line) => {
+        const trimmed = line.trim();
+        // Se não for comentário, mantém
+        if (!trimmed.startsWith('//')) return true;
 
-      const allInstructionsToRemove = [...oldInstructionsLv2];
+        // Se for comentário, verifica se contém alguma assinatura de instrução
+        // Verifica também se é a linha específica do array de ataques do exemplo
+        if (trimmed.includes('[ { nome:') && trimmed.includes('dano:'))
+          return false;
 
-      allInstructionsToRemove.forEach((instr) => {
-        cleanCode = cleanCode.split(instr).join('');
+        for (const sig of instructionSignatures) {
+          if (trimmed.includes(sig)) return false;
+        }
+        return true;
       });
 
-      cleanCode = cleanCode.replace(/\n\s*\n\s*\n/g, '\n\n');
+      cleanCode = filteredLines.join('\n');
 
-      codeToLoad = cleanCode.trimEnd() + '\n' + codeToLoad;
+      // Remove excess newlines (more than 2) for cleanliness
+      cleanCode = cleanCode.replace(/\n{3,}/g, '\n\n');
+
+      codeToLoad = cleanCode.trimEnd() + '\n\n' + codeToLoad;
 
       if (levelIndex >= 2) {
         codeToLoad = codeToLoad.replace(
