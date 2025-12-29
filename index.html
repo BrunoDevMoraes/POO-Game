@@ -35,6 +35,34 @@
       </div>
     </div>
 
+    <!-- ==== TELA DE SAVE ENCONTRADO (NOVA) ==== -->
+    <div id="save-found-screen" class="fullscreen-overlay hidden">
+      <div
+        class="map-container bg-gray-800 p-8 rounded-lg shadow-lg border-4 border-blue-400 max-w-xl w-full"
+      >
+        <h1 class="pixel-font text-2xl md:text-3xl text-blue-400 mb-6">
+          Progresso Encontrado!
+        </h1>
+        <p class="text-xl text-gray-200 mb-10 leading-relaxed">
+          Encontramos um jogo salvo. Deseja continuar de onde parou?
+        </p>
+        <div class="flex flex-col gap-4">
+          <button
+            id="continue-game-btn"
+            class="nes-btn is-primary text-lg w-full"
+          >
+            Continuar
+          </button>
+          <button
+            id="restart-save-btn"
+            class="nes-btn is-danger text-lg w-full"
+          >
+            Recomeçar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- ==== TELA DE INÍCIO (AGORA UM MODAL) ==== -->
     <div id="start-screen" class="fullscreen-overlay hidden">
       <h1 class="pixel-font text-2xl md:text-4xl text-yellow-400 mb-4">
@@ -135,7 +163,10 @@
             <button id="ally-prev-btn" class="nes-btn is-warning hidden">
               Anterior
             </button>
-            <button id="ally-next-btn" class="nes-btn is-primary hidden">
+            <button
+              id="ally-next-btn"
+              class="nes-btn is-primary hidden ml-auto"
+            >
               Próximo
             </button>
           </div>
@@ -240,7 +271,7 @@
             </div>
 
             <div class="mt-6 flex-shrink-0">
-              <h3 class="text-xl font-bold mb-2">Log de Feedback:</h3>
+              <h3 class="text-xl font-bold mb-2 mt-4">Log de Feedback:</h3>
               <div
                 id="battle-log"
                 class="battle-log rounded-md font-mono mb-4 h-32"
@@ -278,6 +309,7 @@
                   class="monster-sprite w-48 h-48 mx-auto"
                   src=""
                   alt="Seu Monstro"
+                  onerror="this.style.display='none'; this.nextElementSibling.textContent = '👾'"
                 />
                 <h3 id="player-monster-name" class="font-bold text-lg truncate">
                   Seu Monstro
@@ -303,6 +335,7 @@
                   class="monster-sprite w-48 h-48 mx-auto"
                   src=""
                   alt="Inimigo"
+                  onerror="this.style.display='none'; this.nextElementSibling.textContent = '👾'"
                 />
                 <h3 id="enemy-monster-name" class="font-bold text-lg truncate">
                   Inimigo
@@ -335,7 +368,6 @@
         </main>
       </div>
     </div>
-
     <script src="script.js"></script>
   </body>
 </html>

@@ -1,6 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
   // --- Elementos da UI ---
   const codeEditor = document.getElementById('code-editor');
+
+  codeEditor.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = codeEditor.selectionStart;
+      const end = codeEditor.selectionEnd;
+      const spaces = '  ';
+      codeEditor.value =
+        codeEditor.value.substring(0, start) +
+        spaces +
+        codeEditor.value.substring(end);
+      codeEditor.selectionStart = codeEditor.selectionEnd =
+        start + spaces.length;
+    }
+  });
+
   const battleBtn = document.getElementById('battle-btn');
   const battleLog = document.getElementById('battle-log');
   const missionTitle = document.getElementById('mission-title');
@@ -9,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Telas ---
   const welcomeScreen = document.getElementById('welcome-screen');
+  const saveFoundScreen = document.getElementById('save-found-screen'); // NOVO
   const startScreen = document.getElementById('start-screen');
   const mapScreen = document.getElementById('map-screen');
   const gameScreen = document.getElementById('game-screen');
@@ -18,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Botões ---
   const playGameBtn = document.getElementById('play-game-btn');
+  const continueGameBtn = document.getElementById('continue-game-btn'); // NOVO
+  const restartSaveBtn = document.getElementById('restart-save-btn'); // NOVO
   const returnToMapBtn = document.getElementById('return-to-map-btn');
   const battleWonBtn = document.getElementById('battle-won-btn');
   const closeAllyModalBtn = document.getElementById('close-ally-modal-btn');
@@ -29,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mapMessage = document.getElementById('map-message');
   const winSprite = document.getElementById('win-sprite');
 
-  // --- Elementos do Modal do Aliado (Paginação) ---
+  // --- Elementos do Modal do Aliado ---
   const allyTip = document.getElementById('ally-tip');
   const allyPageIndicator = document.getElementById('ally-page-indicator');
   const allyPaginationControls = document.getElementById(
@@ -48,13 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Variáveis de estado ---
   let currentLevel = 0;
   let playerMonster, enemyMonster;
-  let chosenPooketmonData = null; // Inicia como nulo
-  let isCreationMode = false; // Controla a tela de criação
-  let savedCreationCode = null; // Armazena o código do Nível 0
-  let savedLevel2Code = null; // Armazena o rascunho do Nível 2 (Métodos)
-  let savedLevel3Code = null; // Armazena o rascunho do Nível 3 (Herança)
-  let savedLevel4Code = null; // Armazena o rascunho do Nível 4 (Polimorfismo)
-  let pooketmonCreated = false; // Flag para saber se o POOketmon foi validado com sucesso
+  let chosenPooketmonData = null;
+  let isCreationMode = false;
+  let savedCreationCode = null;
+  let savedLevel2Code = null;
+  let savedLevel3Code = null;
+  let savedLevel4Code = null;
+  let pooketmonCreated = false;
+  let collectedItemIds = [];
 
   // --- Variáveis para Rastrear Bônus de Itens ---
   let accumulatedHpBonus = 0;
@@ -66,19 +86,93 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentAllyPage = 0;
   let currentAllyDialogue = [];
 
-  // --- DADOS DOS POOKETMONS INICIAIS (ATUALIZADOS COM ASSETS) ---
+  // --- Lógica de Inicialização ---
+  function checkSaveOnStartup() {
+    if (localStorage.getItem('pooketSave')) {
+      welcomeScreen.classList.add('hidden');
+      saveFoundScreen.classList.remove('hidden');
+    }
+  }
+  checkSaveOnStartup();
+
+  // --- PERSISTÊNCIA: Funções de Save/Load ---
+  function saveGame() {
+    const gameState = {
+      currentLevel,
+      chosenPooketmonData,
+      enemiesDefeated,
+      playerPosition,
+      currentRoomId,
+      accumulatedHpBonus,
+      accumulatedDanoBonus,
+      pooketmonCreated,
+      savedCreationCode,
+      savedLevel2Code,
+      savedLevel3Code,
+      savedLevel4Code,
+      collectedItemIds,
+    };
+    localStorage.setItem('pooketSave', JSON.stringify(gameState));
+    console.log('Jogo Salvo!');
+  }
+
+  function loadGame() {
+    const saved = localStorage.getItem('pooketSave');
+    if (!saved) return false;
+    try {
+      const state = JSON.parse(saved);
+      currentLevel = state.currentLevel;
+      chosenPooketmonData = state.chosenPooketmonData;
+      enemiesDefeated = state.enemiesDefeated;
+      playerPosition = state.playerPosition;
+      currentRoomId = state.currentRoomId;
+      accumulatedHpBonus = state.accumulatedHpBonus;
+      accumulatedDanoBonus = state.accumulatedDanoBonus;
+      pooketmonCreated = state.pooketmonCreated;
+      savedCreationCode = state.savedCreationCode;
+      savedLevel2Code = state.savedLevel2Code;
+      savedLevel3Code = state.savedLevel3Code;
+      savedLevel4Code = state.savedLevel4Code;
+      collectedItemIds = state.collectedItemIds || [];
+
+      restoreMapState();
+      return true;
+    } catch (e) {
+      console.error('Erro ao carregar save:', e);
+      return false;
+    }
+  }
+
+  function restoreMapState() {
+    // Remove itens já coletados do mapa visual
+    // Itera sobre todas as salas (chaves do ROOM_DATA)
+    Object.keys(ROOM_DATA).forEach((roomId) => {
+      const room = ROOM_DATA[roomId];
+      for (let y = 0; y < room.layout.length; y++) {
+        for (let x = 0; x < room.layout[y].length; x++) {
+          const tile = room.layout[y][x];
+          if (collectedItemIds.includes(tile)) {
+            room.layout[y][x] = '_';
+          }
+        }
+      }
+    });
+  }
+
+  // --- FIM DA LÓGICA DE PERSISTÊNCIA ---
+
   const STARTER_POOKETMONS = {
     flamos: {
       name: 'Flamos',
-      sprite: 'assets/fogo1.png', // <-- CAMINHO DO ARQUIVO
+      sprite: 'assets/fogo1.png',
       baseHealth: 100,
       attacks: [
         { name: 'Brasa', dano: 15 },
         { name: 'Arranhão', dano: 10 },
       ],
       evolutionName: 'Infernix',
-      evolutionSprite: 'assets/fogo2.png', // <-- CAMINHO DO ARQUIVO
-      finalSprite: 'assets/fogo3.png', // <-- CAMINHO DO ARQUIVO
+      evolutionSprite: 'assets/fogo2.png',
+      finalSprite: 'assets/fogo3.png',
       evolutionAttacks: [
         { name: 'Lança-chamas', dano: 40 },
         { name: 'Garra de Fogo', dano: 30 },
@@ -86,15 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     aquaz: {
       name: 'Aquaz',
-      sprite: 'assets/agua1.png', // <-- CAMINHO DO ARQUIVO
+      sprite: 'assets/agua1.png',
       baseHealth: 100,
       attacks: [
         { name: "Jato d'Água", dano: 15 },
         { name: 'Mordida', dano: 11 },
       ],
       evolutionName: 'Leviata',
-      evolutionSprite: 'assets/agua2.png', // <-- CAMINHO DO ARQUIVO
-      finalSprite: 'assets/agua3.png', // <-- CAMINHO DO ARQUIVO
+      evolutionSprite: 'assets/agua2.png',
+      finalSprite: 'assets/agua3.png',
       evolutionAttacks: [
         { name: 'Hidro-bomba', dano: 42 },
         { name: 'Cauda de Água', dano: 28 },
@@ -102,15 +196,15 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     folion: {
       name: 'Folion',
-      sprite: 'assets/planta1.png', // <-- CAMINHO DO ARQUIVO
+      sprite: 'assets/planta1.png',
       baseHealth: 100,
       attacks: [
         { name: 'Folha Navalha', dano: 15 },
         { name: 'Chicote de Cipó', dano: 12 },
       ],
       evolutionName: 'Arborath',
-      evolutionSprite: 'assets/planta2.png', // <-- CAMINHO DO ARQUIVO
-      finalSprite: 'assets/planta3.png', // <-- CAMINHO DO ARQUIVO
+      evolutionSprite: 'assets/planta2.png',
+      finalSprite: 'assets/planta3.png',
       evolutionAttacks: [
         { name: 'Raio Solar', dano: 45 },
         { name: 'Espinhos', dano: 25 },
@@ -118,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
     },
   };
 
-  // --- ESTRUTURA DOS NÍVEIS (ATUALIZADA COM ASSETS INIMIGOS) ---
   const levels = [
     {
       title: 'Nível 1: Classes e Objetos',
@@ -127,35 +220,35 @@ document.addEventListener('DOMContentLoaded', () => {
       starterCodeTemplate: (
         pooket
       ) => `// Olá, ${pooket.name}! Bem-vindo ao laboratório.
-// Para criar um POOketmon, precisamos de sua "planta" (Classe).
+    // Para criar um POOketmon, precisamos de sua "planta" (Classe).
 
-// 1. Declare uma nova classe chamada 'Monstro'.
+    // 1. Declare uma nova classe chamada 'Monstro'.
 
-// 2. Toda classe precisa de um 'constructor' para ser criada.
-//    O nosso deve aceitar os parâmetros básicos: 'nome', 'vida', 'ataques'.
+    // 2. Toda classe precisa de um 'constructor' para ser criada.
+    //    O nosso deve aceitar os parâmetros básicos: 'nome', 'vida', 'ataques'.
 
-// 3. Dentro do constructor, o objeto precisa "lembrar" quem ele é.
-//    Use 'this' para guardar os parâmetros que você recebeu.
+    // 3. Dentro do constructor, o objeto precisa "lembrar" quem ele é.
+    //    Use 'this' para guardar os parâmetros que você recebeu.
 
-// 4. Também precisamos de um atributo extra para a batalha:
-//    - 'vidaMaxima' (deve ser o mesmo valor inicial de 'vida')
-//    (O 'sprite' será adicionado por nós!)
+    // 4. Também precisamos de um atributo extra para a batalha:
+    //    - 'vidaMaxima' (deve ser o mesmo valor inicial de 'vida')
+    //    (O 'sprite' será adicionado por nós!)
 
-// 5. Agora, fora da classe, você precisa "construir" o seu monstro.
-//    Declare uma variável chamada 'meuMonstro'.
+    // 5. Agora, fora da classe, você precisa "construir" o seu monstro.
+    //    Declare uma variável chamada 'meuMonstro'.
 
-// 6. Atribua a ela uma *nova instância* da sua classe Monstro por meio de *new Monstro(...)*
-//    No lugar de ... passe os valores do seu ${pooket.name}:
-//    - Nome: "${pooket.name}"
-//    - Vida: ${pooket.baseHealth} (Deve estar entre 70 e 100)
-//    - Ataques (Defina APENAS UM ataque com dano entre 15 e 20):
-//      [ { nome: "${pooket.attacks[0].name}", dano: ${pooket.attacks[0].dano} } ]
+    // 6. Atribua a ela uma *nova instância* da sua classe Monstro por meio de *new Monstro(...)*
+    //    No lugar de ... passe os valores do seu ${pooket.name}:
+    //    - Nome: "${pooket.name}"
+    //    - Vida: ${pooket.baseHealth} (Deve estar entre 70 e 100)
+    //    - Ataques (Defina APENAS UM ataque com dano entre 15 e 20):
+    //      [ { nome: "${pooket.attacks[0].name}", dano: ${pooket.attacks[0].dano} } ]
 
-// Boa sorte, programador!
+    // Boa sorte, programador!
 
-`,
+    `,
       enemyCode: `new Monstro("Britix", 80, [{ nome: "Pancada", dano: 12 }])`,
-      enemySprite: 'assets/inimigo1_pedra.png', // <-- CAMINHO DO ARQUIVO
+      enemySprite: 'assets/inimigo1_pedra.png',
       validation: (player) =>
         player.vida > 0 && player.nome === chosenPooketmonData.name,
       successMessage:
@@ -168,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
       starterCodeTemplate: (pooket) =>
         `// ADICIONE O MÉTODO atacar(alvo, ataqueEscolhido) DENTRO DA CLASSE Monstro\n// DICA: Acesse a vida usando 'alvo.vida' e o dano usando 'ataqueEscolhido.dano'.\n`,
       enemyCode: `new Monstro("Britorix", 150, [{ nome: "Esmagar", dano: 20 }, { nome: "Arremessar Pedra", dano: 15 }])`,
-      enemySprite: 'assets/inimigo2_pedra.png', // <-- CAMINHO DO ARQUIVO
+      enemySprite: 'assets/inimigo2_pedra.png',
       validation: (player) =>
         player.vida > 0 && typeof player.atacar === 'function',
       successMessage:
@@ -193,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pooket.evolutionName
         }");\n// 5. Utilize meuMonstroEvoluido.adicionaAtaque("Ataque Especial", 40);\n`,
       enemyCode: `new Monstro("Britadorix", 200, [{ nome: "Racha Crânio", dano: 40 }])`,
-      enemySprite: 'assets/inimigo3_pedra.png', // <-- CAMINHO DO ARQUIVO
+      enemySprite: 'assets/inimigo3_pedra.png',
       validation: (player) => {
         if (player.vida <= 0) return false;
         if (player.constructor.name !== chosenPooketmonData.evolutionName) {
@@ -218,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
       starterCodeTemplate: (pooket) =>
         `// 1. Encontre a classe ${pooket.evolutionName} no seu código acima.\n// 2. Dentro dela, escreva o método atacar(alvo, ataqueEscolhido).\n// 3. Implemente a lógica: reduza a vida do alvo (dano normal) e aumente a sua vida (this.vida) em metade do dano.\n`,
       enemyCode: `new Monstro("Phantom", 180, [{ nome: "Soco Fantasma", dano: 50 }])`,
-      enemySprite: 'assets/inimigo4_fantasma.png', // <-- CAMINHO DO ARQUIVO
+      enemySprite: 'assets/inimigo4_fantasma.png',
       validation: (player) => {
         if (player.vida <= 0) return false;
         if (player.constructor.name !== chosenPooketmonData.evolutionName) {
@@ -239,7 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
     },
   ];
 
-  // --- SISTEMA DE SALAS ---
   const ROOM_DATA = {
     introRoom: {
       layout: [
@@ -509,11 +601,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let mapMessageTimeout;
 
   function initializeMap() {
-    // Mantém sempre o ícone de estudante no mapa
-    // TILE_ICONS['P'] = '🧑‍🎓'; // Removido para usar '🥸'
-
-    // Limpa o 'P' estático da sala inicial
-    ROOM_DATA[currentRoomId].layout[playerPosition.y][playerPosition.x] = '_';
+    // --- MUDANÇA: Limpa explicitamente o 'P' estático da sala de introdução (2,2) ---
+    // Isso evita que o ícone original fique no mapa se o jogador carregar um save em outra posição
+    if (ROOM_DATA.introRoom.layout[2][2] === 'P') {
+      ROOM_DATA.introRoom.layout[2][2] = '_';
+    }
 
     renderMap();
     mapScreen.classList.remove('hidden');
@@ -565,7 +657,8 @@ document.addEventListener('DOMContentLoaded', () => {
       mapScreen.classList.contains('hidden') ||
       !allyModal.classList.contains('hidden') ||
       !itemQuizModal.classList.contains('hidden') ||
-      !startScreen.classList.contains('hidden')
+      !startScreen.classList.contains('hidden') ||
+      !saveFoundScreen.classList.contains('hidden') // Prevents moving under modal
     ) {
       return;
     }
@@ -635,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentRoomId = portal.targetRoomId;
         playerPosition.x = portal.targetX;
         playerPosition.y = portal.targetY;
+        saveGame(); // --- CHECKPOINT: Mudança de Sala ---
         renderMap();
         return;
       }
@@ -699,6 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     playerPosition.x = newX;
     playerPosition.y = newY;
+    saveGame(); // --- CHECKPOINT: Movimento ---
     renderMap();
   }
 
@@ -793,6 +888,8 @@ document.addEventListener('DOMContentLoaded', () => {
       quizFeedback.textContent = quizData.correctFeedback;
       quizFeedback.style.color = '#92cc41';
       ROOM_DATA[currentRoomId].layout[itemY][itemX] = '_';
+      collectedItemIds.push(quizId); // --- REGISTRA ITEM ---
+
       if (quizId.startsWith('H')) {
         accumulatedHpBonus += 20;
         chosenPooketmonData.baseHealth += 20;
@@ -823,6 +920,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         showMapMessage('Você acertou! Dano de Ataque +3!');
       }
+      saveGame(); // --- CHECKPOINT: Item Coletado ---
     } else {
       quizFeedback.textContent = quizData.incorrectFeedback;
       quizFeedback.style.color = '#e76e55';
@@ -871,6 +969,10 @@ document.addEventListener('DOMContentLoaded', () => {
       img.src = chosenPooketmonData.finalSprite;
       img.alt = 'Vencedor';
       img.className = 'monster-sprite mx-auto'; // Reusa a classe de estilo para tamanho/centralização
+      img.onerror = function () {
+        this.style.display = 'none';
+        this.parentNode.innerHTML = '🏆';
+      };
       winSprite.appendChild(img);
     } else {
       winSprite.textContent = '🏆';
@@ -959,6 +1061,7 @@ document.addEventListener('DOMContentLoaded', () => {
       logMessage(`Pronto! Seu POOketmon está guardado na POOketbola!`);
 
       isCreationMode = false;
+      saveGame(); // --- CHECKPOINT: Criação ---
 
       setTimeout(() => {
         showMapScreenFromGame();
@@ -1233,6 +1336,7 @@ document.addEventListener('DOMContentLoaded', () => {
       returnToMapBtn.classList.add('hidden');
 
       savedCreationCode = codeEditor.value;
+      saveGame(); // --- CHECKPOINT: Vitória ---
     } else if (playerWon && !validationPassed) {
       logMessage(
         'Você venceu, mas algo no seu código não atendeu aos requisitos da missão. Revise e tente novamente!',
@@ -1292,8 +1396,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = document.getElementById(`${cardId}-card`);
     card.classList.remove('opacity-50');
     document.getElementById(`${cardId}-name`).textContent = monster.nome;
-    // Agora atualiza o atributo SRC da imagem em vez de textContent
-    document.getElementById(`${cardId}-sprite`).src = monster.sprite;
+
+    // CORREÇÃO: Força o display block para garantir que a imagem apareça
+    const spriteElement = document.getElementById(`${cardId}-sprite`);
+    spriteElement.src = monster.sprite;
+    spriteElement.style.display = 'block';
+
     updateHealthBar(cardId, monster);
   }
 
@@ -1502,6 +1610,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     startScreen.classList.add('hidden');
     showCreationScreen();
+    saveGame(); // --- CHECKPOINT: Escolha ---
   }
 
   function handleMainButtonAction() {
@@ -1513,11 +1622,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function restartGame() {
+    localStorage.removeItem('pooketSave'); // --- LIMPA SAVE ---
+
     chosenPooketmonData = null;
     enemiesDefeated = [false, false, false, false];
     currentLevel = 0;
     isCreationMode = false;
     pooketmonCreated = false; // --- CORREÇÃO DE BUG: Reset flag
+    collectedItemIds = [];
 
     winScreen.classList.add('hidden');
     gameScreen.classList.add('hidden');
@@ -1532,10 +1644,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Event Listeners ---
   battleBtn.addEventListener('click', handleMainButtonAction);
+
+  // --- MUDANÇA: Play Button agora só inicia jogo novo se não houver lógica de save anterior ---
   playGameBtn.addEventListener('click', () => {
     welcomeScreen.classList.add('hidden');
     initializeMap();
   });
+
+  // --- NOVOS LISTENERS PARA TELA DE SAVE ---
+  continueGameBtn.addEventListener('click', () => {
+    if (loadGame()) {
+      saveFoundScreen.classList.add('hidden');
+      initializeMap();
+    } else {
+      // Fallback se algo der errado
+      saveFoundScreen.classList.add('hidden');
+      welcomeScreen.classList.remove('hidden');
+    }
+  });
+
+  restartSaveBtn.addEventListener('click', () => {
+    localStorage.removeItem('pooketSave');
+    saveFoundScreen.classList.add('hidden');
+    welcomeScreen.classList.remove('hidden');
+  });
+  // ----------------------------------------
+
   battleWonBtn.addEventListener('click', () => {
     showMapScreenFromGame();
   });
@@ -1557,6 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
       logMessage('Rascunho do Nível 4 salvo. Voltando ao mapa...', 'info');
     }
     // ----------------------------------------------------
+    saveGame(); // --- CHECKPOINT: Sair do editor ---
     showMapScreenFromGame();
   });
   allyPrevBtn.addEventListener('click', () => {

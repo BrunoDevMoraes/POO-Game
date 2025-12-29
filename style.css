@@ -157,6 +157,7 @@ body {
 
 /* Modais devem aparecer SOBRE a tela de mapa (que também é um overlay) */
 #start-screen,
+#save-found-screen,
 #ally-modal,
 #item-quiz-modal,
 #win-screen {
