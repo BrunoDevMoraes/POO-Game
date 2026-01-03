@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // --- Elementos da UI ---
+  // Elementos da UI
   const codeEditor = document.getElementById('code-editor');
 
   codeEditor.addEventListener('keydown', (e) => {
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const missionDescription = document.getElementById('mission-description');
   const attackButtonsContainer = document.getElementById('attack-buttons');
 
-  // --- Telas ---
+  // Telas
   const welcomeScreen = document.getElementById('welcome-screen');
   const saveFoundScreen = document.getElementById('save-found-screen'); // NOVO
   const startScreen = document.getElementById('start-screen');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const winScreen = document.getElementById('win-screen');
   const itemQuizModal = document.getElementById('item-quiz-modal');
 
-  // --- Botões ---
+  // Botões
   const playGameBtn = document.getElementById('play-game-btn');
   const continueGameBtn = document.getElementById('continue-game-btn'); // NOVO
   const restartSaveBtn = document.getElementById('restart-save-btn'); // NOVO
@@ -43,12 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const restartGameBtn = document.getElementById('restart-game-btn');
   const closeQuizModalBtn = document.getElementById('close-quiz-modal-btn');
 
-  // --- Elementos do Mapa ---
+  // Elementos do Mapa
   const mapGrid = document.getElementById('map-grid');
   const mapMessage = document.getElementById('map-message');
   const winSprite = document.getElementById('win-sprite');
 
-  // --- Elementos do Modal do Aliado ---
+  // Elementos do Modal do Aliado
   const allyTip = document.getElementById('ally-tip');
   const allyPageIndicator = document.getElementById('ally-page-indicator');
   const allyPaginationControls = document.getElementById(
@@ -57,14 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const allyPrevBtn = document.getElementById('ally-prev-btn');
   const allyNextBtn = document.getElementById('ally-next-btn');
 
-  // --- Elementos do Quiz ---
+  // Elementos do Quiz
   const quizModalBorder = document.getElementById('item-quiz-modal-border');
   const quizModalTitle = document.getElementById('quiz-modal-title');
   const quizQuestion = document.getElementById('quiz-question');
   const quizOptions = document.getElementById('quiz-options');
   const quizFeedback = document.getElementById('quiz-feedback');
 
-  // --- Variáveis de estado ---
+  // Variáveis de estado
   let currentLevel = 0;
   let playerMonster, enemyMonster;
   let chosenPooketmonData = null;
@@ -76,17 +76,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let pooketmonCreated = false;
   let collectedItemIds = [];
 
-  // --- Variáveis para Rastrear Bônus de Itens ---
+  // Variáveis para Rastrear Bônus de Itens
   let accumulatedHpBonus = 0;
   let accumulatedDanoBonus = 0;
 
   const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
-  // --- Estado da Paginação do Aliado ---
+  // Estado da Paginação do Aliado
   let currentAllyPage = 0;
   let currentAllyDialogue = [];
 
-  // --- Lógica de Inicialização ---
+  // Lógica de Inicialização
   function checkSaveOnStartup() {
     if (localStorage.getItem('pooketSave')) {
       welcomeScreen.classList.add('hidden');
@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   checkSaveOnStartup();
 
-  // --- PERSISTÊNCIA: Funções de Save/Load ---
   function saveGame() {
     const gameState = {
       currentLevel,
@@ -158,8 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  // --- FIM DA LÓGICA DE PERSISTÊNCIA ---
 
   const STARTER_POOKETMONS = {
     flamos: {
@@ -601,8 +598,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let mapMessageTimeout;
 
   function initializeMap() {
-    // --- MUDANÇA: Limpa explicitamente o 'P' estático da sala de introdução (2,2) ---
-    // Isso evita que o ícone original fique no mapa se o jogador carregar um save em outra posição
     if (ROOM_DATA.introRoom.layout[2][2] === 'P') {
       ROOM_DATA.introRoom.layout[2][2] = '_';
     }
@@ -658,7 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
       !allyModal.classList.contains('hidden') ||
       !itemQuizModal.classList.contains('hidden') ||
       !startScreen.classList.contains('hidden') ||
-      !saveFoundScreen.classList.contains('hidden') // Prevents moving under modal
+      !saveFoundScreen.classList.contains('hidden')
     ) {
       return;
     }
@@ -706,8 +701,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetTile === 'D') {
       const portal = room.portals.find((p) => p.x === newX && p.y === newY);
       if (portal) {
-        // --- CORREÇÃO DE BUG ---
-        // Agora verifica pooketmonCreated em vez de savedCreationCode
         if (portal.requiresPooketmonCreation && !pooketmonCreated) {
           showMapMessage(
             'Você deve criar seu POOketmon com o cientista (👨‍🔬) primeiro!'
@@ -728,7 +721,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentRoomId = portal.targetRoomId;
         playerPosition.x = portal.targetX;
         playerPosition.y = portal.targetY;
-        saveGame(); // --- CHECKPOINT: Mudança de Sala ---
+        saveGame(); // CHECKPOINT: Mudança de Sala
         renderMap();
         return;
       }
@@ -738,8 +731,6 @@ document.addEventListener('DOMContentLoaded', () => {
         startScreen.classList.remove('hidden');
         return;
       }
-      // --- CORREÇÃO DE BUG ---
-      // Agora verifica pooketmonCreated em vez de savedCreationCode
       if (!pooketmonCreated) {
         showCreationScreen();
         return;
@@ -793,7 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     playerPosition.x = newX;
     playerPosition.y = newY;
-    saveGame(); // --- CHECKPOINT: Movimento ---
+    saveGame(); // CHECKPOINT: Movimento
     renderMap();
   }
 
@@ -888,7 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
       quizFeedback.textContent = quizData.correctFeedback;
       quizFeedback.style.color = '#92cc41';
       ROOM_DATA[currentRoomId].layout[itemY][itemX] = '_';
-      collectedItemIds.push(quizId); // --- REGISTRA ITEM ---
+      collectedItemIds.push(quizId); // REGISTRA ITEM
 
       if (quizId.startsWith('H')) {
         accumulatedHpBonus += 20;
@@ -920,7 +911,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         showMapMessage('Você acertou! Dano de Ataque +3!');
       }
-      saveGame(); // --- CHECKPOINT: Item Coletado ---
+      saveGame(); // CHECKPOINT: Item Coletado
     } else {
       quizFeedback.textContent = quizData.incorrectFeedback;
       quizFeedback.style.color = '#e76e55';
@@ -960,15 +951,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showWinScreen() {
     mapScreen.classList.add('hidden');
-    // --- CORREÇÃO APLICADA AQUI ---
-    winSprite.innerHTML = ''; // Limpa o conteúdo (que antes era emoji)
+    winSprite.innerHTML = '';
 
     if (chosenPooketmonData) {
-      // Cria um elemento de imagem
       const img = document.createElement('img');
       img.src = chosenPooketmonData.finalSprite;
       img.alt = 'Vencedor';
-      img.className = 'monster-sprite mx-auto'; // Reusa a classe de estilo para tamanho/centralização
+      img.className = 'monster-sprite mx-auto';
       img.onerror = function () {
         this.style.display = 'none';
         this.parentNode.innerHTML = '🏆';
@@ -977,7 +966,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       winSprite.textContent = '🏆';
     }
-    // -----------------------------
     winScreen.classList.remove('hidden');
   }
 
@@ -995,7 +983,6 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error("A instância não foi criada com 'new Monstro(...)'.");
       }
 
-      // CORREÇÃO: Adicionado \n antes de return para evitar comentários quebrando o código
       const fullPlayerCode = `${playerCode}\nreturn meuMonstro;`;
       const playerFactory = new Function(fullPlayerCode);
       const testMonster = playerFactory();
@@ -1056,12 +1043,12 @@ document.addEventListener('DOMContentLoaded', () => {
       );
 
       savedCreationCode = playerCode;
-      pooketmonCreated = true; // --- CORREÇÃO DE BUG: Seta flag de sucesso
+      pooketmonCreated = true;
       logMessage('Sucesso! Seu POOketmon foi criado!', 'victory');
       logMessage(`Pronto! Seu POOketmon está guardado na POOketbola!`);
 
       isCreationMode = false;
-      saveGame(); // --- CHECKPOINT: Criação ---
+      saveGame(); // CHECKPOINT: Criação
 
       setTimeout(() => {
         showMapScreenFromGame();
@@ -1081,15 +1068,12 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const playerCode = codeEditor.value;
 
-      // --- MUDANÇA: Definição dinâmica do nome da variável de instância ---
       let instanceVarName = 'meuMonstro';
       if (currentLevel >= 2) {
         // Níveis 3 e 4 (Herança e Polimorfismo)
         instanceVarName = 'meuMonstroEvoluido';
       }
-      // --------------------------------------------------------------------
 
-      // CORREÇÃO: Adicionado \n antes de return para evitar comentários quebrando o código
       const fullPlayerCode = `${playerCode}\nreturn ${instanceVarName};`;
       const playerFactory = new Function(fullPlayerCode);
       playerMonster = playerFactory();
@@ -1121,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!playerMonster.sprite) {
         if (playerMonster.constructor.name === 'Slime') {
-          playerMonster.sprite = 'assets/slime.png'; // Falback
+          playerMonster.sprite = 'assets/slime.png';
         } else if (chosenPooketmonData) {
           if (currentLevel <= 1) {
             playerMonster.sprite = chosenPooketmonData.sprite;
@@ -1336,7 +1320,7 @@ document.addEventListener('DOMContentLoaded', () => {
       returnToMapBtn.classList.add('hidden');
 
       savedCreationCode = codeEditor.value;
-      saveGame(); // --- CHECKPOINT: Vitória ---
+      saveGame(); // CHECKPOINT: Vitória
     } else if (playerWon && !validationPassed) {
       logMessage(
         'Você venceu, mas algo no seu código não atendeu aos requisitos da missão. Revise e tente novamente!',
@@ -1391,13 +1375,11 @@ document.addEventListener('DOMContentLoaded', () => {
     battleLog.scrollTop = battleLog.scrollHeight;
   }
 
-  // --- ATUALIZAÇÃO DA UI PARA USAR IMAGENS ---
   function updateMonsterUI(cardId, monster) {
     const card = document.getElementById(`${cardId}-card`);
     card.classList.remove('opacity-50');
     document.getElementById(`${cardId}-name`).textContent = monster.nome;
 
-    // CORREÇÃO: Força o display block para garantir que a imagem apareça
     const spriteElement = document.getElementById(`${cardId}-sprite`);
     spriteElement.src = monster.sprite;
     spriteElement.style.display = 'block';
@@ -1427,7 +1409,6 @@ document.addEventListener('DOMContentLoaded', () => {
       card.classList.add('opacity-50');
       document.getElementById(`${cardId}-name`).textContent =
         cardId === 'player-monster' ? 'Seu Monstro' : 'Inimigo';
-      // Reseta o SRC para vazio ou placeholder
       document.getElementById(`${cardId}-sprite`).src = '';
       const hpBar = document.getElementById(`${cardId}-hp-bar`);
       hpBar.style.width = '100%';
@@ -1442,8 +1423,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let codeToLoad = level.starterCodeTemplate(chosenPooketmonData);
 
-    // --- LÓGICA DE RESTAURAÇÃO DE RASCUNHO (TODOS OS NÍVEIS) ---
-
+    // LÓGICA DE RESTAURAÇÃO DE RASCUNHO (TODOS OS NÍVEIS)
     // Nível 2: Métodos com Parâmetros
     if (levelIndex === 1 && savedLevel2Code) {
       codeToLoad = savedLevel2Code;
@@ -1522,7 +1502,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       cleanCode = filteredLines.join('\n');
 
-      // Remove excess newlines (more than 2) for cleanliness
       cleanCode = cleanCode.replace(/\n{3,}/g, '\n\n');
 
       codeToLoad = cleanCode.trimEnd() + '\n\n' + codeToLoad;
@@ -1610,7 +1589,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     startScreen.classList.add('hidden');
     showCreationScreen();
-    saveGame(); // --- CHECKPOINT: Escolha ---
+    saveGame(); // CHECKPOINT: Escolha
   }
 
   function handleMainButtonAction() {
@@ -1622,13 +1601,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function restartGame() {
-    localStorage.removeItem('pooketSave'); // --- LIMPA SAVE ---
+    localStorage.removeItem('pooketSave'); // LIMPA SAVE
 
     chosenPooketmonData = null;
     enemiesDefeated = [false, false, false, false];
     currentLevel = 0;
     isCreationMode = false;
-    pooketmonCreated = false; // --- CORREÇÃO DE BUG: Reset flag
+    pooketmonCreated = false;
     collectedItemIds = [];
 
     winScreen.classList.add('hidden');
@@ -1642,22 +1621,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.reload();
   }
 
-  // --- Event Listeners ---
+  // Event Listeners
   battleBtn.addEventListener('click', handleMainButtonAction);
 
-  // --- MUDANÇA: Play Button agora só inicia jogo novo se não houver lógica de save anterior ---
   playGameBtn.addEventListener('click', () => {
     welcomeScreen.classList.add('hidden');
     initializeMap();
   });
 
-  // --- NOVOS LISTENERS PARA TELA DE SAVE ---
   continueGameBtn.addEventListener('click', () => {
     if (loadGame()) {
       saveFoundScreen.classList.add('hidden');
       initializeMap();
     } else {
-      // Fallback se algo der errado
       saveFoundScreen.classList.add('hidden');
       welcomeScreen.classList.remove('hidden');
     }
@@ -1668,7 +1644,6 @@ document.addEventListener('DOMContentLoaded', () => {
     saveFoundScreen.classList.add('hidden');
     welcomeScreen.classList.remove('hidden');
   });
-  // ----------------------------------------
 
   battleWonBtn.addEventListener('click', () => {
     showMapScreenFromGame();
@@ -1679,7 +1654,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isCreationMode = false;
       logMessage('Código salvo. Voltando ao mapa...', 'info');
     }
-    // --- LÓGICA DE SALVAR RASCUNHOS (Níveis 2, 3 e 4) ---
+    // LÓGICA DE SALVAR RASCUNHOS (Níveis 2, 3 e 4)
     else if (currentLevel === 1) {
       savedLevel2Code = codeEditor.value;
       logMessage('Rascunho do Nível 2 salvo. Voltando ao mapa...', 'info');
@@ -1690,8 +1665,7 @@ document.addEventListener('DOMContentLoaded', () => {
       savedLevel4Code = codeEditor.value;
       logMessage('Rascunho do Nível 4 salvo. Voltando ao mapa...', 'info');
     }
-    // ----------------------------------------------------
-    saveGame(); // --- CHECKPOINT: Sair do editor ---
+    saveGame(); // CHECKPOINT: Sair do editor
     showMapScreenFromGame();
   });
   allyPrevBtn.addEventListener('click', () => {
