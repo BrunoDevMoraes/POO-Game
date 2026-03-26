@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const allyTip = document.getElementById('ally-tip');
   const allyPageIndicator = document.getElementById('ally-page-indicator');
   const allyPaginationControls = document.getElementById(
-    'ally-pagination-controls'
+    'ally-pagination-controls',
   );
   const allyPrevBtn = document.getElementById('ally-prev-btn');
   const allyNextBtn = document.getElementById('ally-next-btn');
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
       description:
         'Vamos começar! Defina a classe `Monstro`. No construtor, receba `nome`, `vida` e `ataques` e armazene-os usando `this`. Por fim, crie a instância do seu POOketmon.',
       starterCodeTemplate: (
-        pooket
+        pooket,
       ) => `// Olá, ${pooket.name}! Bem-vindo ao laboratório.
     // Para criar um POOketmon, precisamos de sua "planta" (Classe).
 
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, [...]) para passar a vida e ataque.\n// 3. O atributo ataques é um array (lista), crie um método para adicionar um novo ataque à esta lista: adicionaAtaque(nome, dano)\n//    (Novos ataques sugeridos: ${pooket.evolutionAttacks
           .map((a) => a.name)
           .join(
-            ', '
+            ', ',
           )})\n// 4. Crie a instância da evolução: const meuMonstroEvoluido = new ${
           pooket.evolutionName
         }("${
@@ -288,12 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (player.vida <= 0) return false;
         if (player.constructor.name !== chosenPooketmonData.evolutionName) {
           throw new Error(
-            `A classe de evolução deve se chamar '${chosenPooketmonData.evolutionName}' (e não '${player.constructor.name}').`
+            `A classe de evolução deve se chamar '${chosenPooketmonData.evolutionName}' (e não '${player.constructor.name}').`,
           );
         }
         if (!player.ataques || player.ataques.length < 2) {
           throw new Error(
-            'Você não adicionou o novo ataque na instância! Use o método que você criou (ex: meuMonstroEvoluido.addMove(...)).'
+            'Você não adicionou o novo ataque na instância! Use o método que você criou (ex: meuMonstroEvoluido.addMove(...)).',
           );
         }
         return true;
@@ -313,13 +313,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (player.vida <= 0) return false;
         if (player.constructor.name !== chosenPooketmonData.evolutionName) {
           throw new Error(
-            `Você deve modificar a classe '${chosenPooketmonData.evolutionName}', não criar outra!`
+            `Você deve modificar a classe '${chosenPooketmonData.evolutionName}', não criar outra!`,
           );
         }
         const proto = Object.getPrototypeOf(player);
         if (!proto.hasOwnProperty('atacar')) {
           throw new Error(
-            `O método 'atacar' não foi encontrado dentro da classe ${chosenPooketmonData.evolutionName}. Certifique-se de escrevê-lo dentro da classe!`
+            `O método 'atacar' não foi encontrado dentro da classe ${chosenPooketmonData.evolutionName}. Certifique-se de escrevê-lo dentro da classe!`,
           );
         }
         return true;
@@ -518,7 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
       'Olá, estudante! Bem-vindo! Em breve, o Cientista Chefe 👨‍🔬 pedirá que você crie seu próprio POOketmon.',
       "Para isso, você usará uma **Classe** de JavaScript. Pense em uma Classe como uma 'forma de biscoito'. Ela define a *estrutura* (como 'nome' e 'vida').",
       "Aqui está a sintaxe básica em JavaScript:<br><br><code class='text-cyan-300' style='text-align: left; display: inline-block;'>class NomeDaClasse {<br>  constructor(parametro1) {<br>    this.propriedade = parametro1;<br>  }<br>}</code>",
-      "O 'biscoito' que você cria dela é o **Objeto**. Você usará a palavra-chave `class` (para definir a forma) e `constructor` (o que 'monta' o objeto) para começar.",
+      "O 'biscoito' que você cria dela é o **Objeto**.<br><br><code class='text-cyan-300' style='text-align: left; display: inline-block;'>const meuBiscoito = new Biscoito('Cookie', [{ farinha: 100, ovo: 1, chocolate: 300 }])</code><br><br>Você usará a palavra-chave `class` (para definir a forma) e `constructor` (o que 'monta' o objeto) para começar. Com a palavra `new` seguida do nome da Classe você indica que quer criar um novo Objeto.",
+      'Sinta-se à vontade para copiar trechos de código dos conselhos, caso considere proveitoso!',
     ],
     A0: 'Olá, jovem treinador! Lembre-se: uma **Classe** é como a planta de uma casa. Um **Objeto** (ou instância) é a casa construída a partir dessa planta. Você pode construir várias casas (objetos) da mesma planta (classe)!',
     A1: [
@@ -703,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (portal) {
         if (portal.requiresPooketmonCreation && !pooketmonCreated) {
           showMapMessage(
-            'Você deve criar seu POOketmon com o cientista (👨‍🔬) primeiro!'
+            'Você deve criar seu POOketmon com o cientista (👨‍🔬) primeiro!',
           );
           return;
         }
@@ -714,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
           const enemyIcon = TILE_ICONS['E' + requiredEnemyIndex] || '??';
           showMapMessage(
-            `Você deve derrotar o Mestre ${enemyIcon} para usar esta porta!`
+            `Você deve derrotar o Mestre ${enemyIcon} para usar esta porta!`,
           );
           return;
         }
@@ -745,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!enemiesDefeated[i]) {
             const enemyIcon = TILE_ICONS['E' + i] || '??';
             showMapMessage(
-              `Você deve derrotar o Mestre ${i} (${enemyIcon}) primeiro!`
+              `Você deve derrotar o Mestre ${i} (${enemyIcon}) primeiro!`,
             );
             return;
           }
@@ -867,7 +868,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('is-disabled');
       if (btn.textContent === chosenOption.text) {
         btn.classList.add(
-          chosenOption.isCorrect ? 'is-correct' : 'is-incorrect'
+          chosenOption.isCorrect ? 'is-correct' : 'is-incorrect',
         );
       } else if (
         quizData.options.find((opt) => opt.text === btn.textContent).isCorrect
@@ -891,7 +892,7 @@ document.addEventListener('DOMContentLoaded', () => {
             (match, prefix, valorAtual) => {
               const novoValor = parseInt(valorAtual) + 20;
               return `${prefix}${novoValor}`;
-            }
+            },
           );
         }
         showMapMessage('Você acertou! Vida Base +20!');
@@ -906,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
             (match, valorStr) => {
               const novoDano = parseInt(valorStr) + 3;
               return `dano: ${novoDano}`;
-            }
+            },
           );
         }
         showMapMessage('Você acertou! Dano de Ataque +3!');
@@ -976,7 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const playerCode = codeEditor.value;
       if (!playerCode.includes('class Monstro')) {
         throw new Error(
-          "A classe não foi definida com o nome 'Monstro'. Lembre-se: `class Monstro { ... }`"
+          "A classe não foi definida com o nome 'Monstro'. Lembre-se: `class Monstro { ... }`",
         );
       }
       if (!playerCode.includes('new Monstro')) {
@@ -991,7 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(
           `O 'nome' do monstro (${
             testMonster ? testMonster.nome : 'null'
-          }) não bate com o POOketmon escolhido (${chosenPooketmonData.name}).`
+          }) não bate com o POOketmon escolhido (${chosenPooketmonData.name}).`,
         );
       }
       if (!testMonster.ataques || !Array.isArray(testMonster.ataques)) {
@@ -1002,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', () => {
         testMonster.vidaMaxima !== testMonster.vida
       ) {
         throw new Error(
-          "O monstro não possui 'vidaMaxima' ou ela não é igual à 'vida' inicial."
+          "O monstro não possui 'vidaMaxima' ou ela não é igual à 'vida' inicial.",
         );
       }
 
@@ -1014,13 +1015,13 @@ document.addEventListener('DOMContentLoaded', () => {
         testMonster.vida > maxAllowedLife
       ) {
         throw new Error(
-          `Regra de Balanceamento: A vida inicial deve estar entre ${minAllowedLife} e ${maxAllowedLife} (considerando bônus)!`
+          `Regra de Balanceamento: A vida inicial deve estar entre ${minAllowedLife} e ${maxAllowedLife} (considerando bônus)!`,
         );
       }
 
       if (testMonster.ataques.length !== 1) {
         throw new Error(
-          'Regra de Balanceamento: No nível 0, defina exatamente UM ataque.'
+          'Regra de Balanceamento: No nível 0, defina exatamente UM ataque.',
         );
       }
 
@@ -1032,14 +1033,14 @@ document.addEventListener('DOMContentLoaded', () => {
         testMonster.ataques[0].dano > maxAllowedDano
       ) {
         throw new Error(
-          `Regra de Balanceamento: O dano do ataque inicial deve estar entre ${minAllowedDano} e ${maxAllowedDano} (considerando bônus)!`
+          `Regra de Balanceamento: O dano do ataque inicial deve estar entre ${minAllowedDano} e ${maxAllowedDano} (considerando bônus)!`,
         );
       }
 
       testMonster.sprite = chosenPooketmonData.sprite;
       logMessage(
         "Sprite '" + testMonster.sprite + "' associado automaticamente!",
-        'info'
+        'info',
       );
 
       savedCreationCode = playerCode;
@@ -1053,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         showMapScreenFromGame();
         showMapMessage(
-          `Você criou ${chosenPooketmonData.name}! A porta do laboratório está aberta.`
+          `Você criou ${chosenPooketmonData.name}! A porta do laboratório está aberta.`,
         );
       }, 2500);
     } catch (e) {
@@ -1080,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!playerMonster) {
         throw new Error(
-          `A variável '${instanceVarName}' está indefinida. Certifique-se de criar uma instância: 'const ${instanceVarName} = new SuaClasse(...);'`
+          `A variável '${instanceVarName}' está indefinida. Certifique-se de criar uma instância: 'const ${instanceVarName} = new SuaClasse(...);'`,
         );
       }
 
@@ -1089,7 +1090,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playerMonster.ataques.length > 1
       ) {
         throw new Error(
-          "Regra de POO: A classe base 'Monstro' só suporta 1 ataque."
+          "Regra de POO: A classe base 'Monstro' só suporta 1 ataque.",
         );
       }
 
@@ -1098,7 +1099,7 @@ document.addEventListener('DOMContentLoaded', () => {
           playerMonster.constructor.name !== chosenPooketmonData.evolutionName
         ) {
           throw new Error(
-            `Para este nível, sua classe deve se chamar '${chosenPooketmonData.evolutionName}' (e não '${playerMonster.constructor.name}').`
+            `Para este nível, sua classe deve se chamar '${chosenPooketmonData.evolutionName}' (e não '${playerMonster.constructor.name}').`,
           );
         }
       }
@@ -1136,7 +1137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (currentLevel === 1) {
         if (typeof playerMonster.atacar !== 'function') {
           throw new Error(
-            "Para lutar neste nível, você PRECISA implementar o método 'atacar(alvo, ataqueEscolhido)' dentro da sua classe!"
+            "Para lutar neste nível, você PRECISA implementar o método 'atacar(alvo, ataqueEscolhido)' dentro da sua classe!",
           );
         }
       }
@@ -1153,7 +1154,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const danoCausado = ataqueEscolhido.dano;
           alvo.vida -= danoCausado;
           console.log(
-            `${this.nome} usou ${ataqueEscolhido.nome} causando ${danoCausado} de dano!`
+            `${this.nome} usou ${ataqueEscolhido.nome} causando ${danoCausado} de dano!`,
           );
         }
       }
@@ -1162,7 +1163,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!playerMonster || !Array.isArray(playerMonster.ataques))
         throw new Error(
-          "Seu monstro não foi criado corretamente ou não possui um array de 'ataques'."
+          "Seu monstro não foi criado corretamente ou não possui um array de 'ataques'.",
         );
     } catch (e) {
       logMessage(`Erro no seu código: ${e.message}`, 'defeat');
@@ -1208,17 +1209,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     const attackerSprite = document.getElementById(
-      isPlayer ? 'player-monster-sprite' : 'enemy-monster-sprite'
+      isPlayer ? 'player-monster-sprite' : 'enemy-monster-sprite',
     );
     const targetSprite = document.getElementById(
-      isPlayer ? 'enemy-monster-sprite' : 'player-monster-sprite'
+      isPlayer ? 'enemy-monster-sprite' : 'player-monster-sprite',
     );
     attackerSprite.classList.add(
-      isPlayer ? 'attacking-player' : 'attacking-enemy'
+      isPlayer ? 'attacking-player' : 'attacking-enemy',
     );
     await sleep(200);
     attackerSprite.classList.remove(
-      isPlayer ? 'attacking-player' : 'attacking-enemy'
+      isPlayer ? 'attacking-player' : 'attacking-enemy',
     );
     if (target.vida > 0) {
       targetSprite.classList.add('hit');
@@ -1234,7 +1235,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         if (isPlayer && currentLevel >= 1) {
           throw new Error(
-            "O método 'atacar' não foi encontrado ou não é uma função válida."
+            "O método 'atacar' não foi encontrado ou não é uma função válida.",
           );
         }
         target.vida -= attack.dano;
@@ -1260,7 +1261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       logMessage(
         `${attacker.nome} atacou ${target.nome}!`,
-        isPlayer ? 'player' : 'enemy'
+        isPlayer ? 'player' : 'enemy',
       );
     }
     updateHealthBar(isPlayer ? 'enemy-monster' : 'player-monster', target);
@@ -1295,7 +1296,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const novoValor = parseInt(valorAtual) + 25;
             updatedAny = true;
             return `${prefix}${novoValor}`;
-          }
+          },
         );
         msgLevelUp += '+25 Vida';
 
@@ -1324,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (playerWon && !validationPassed) {
       logMessage(
         'Você venceu, mas algo no seu código não atendeu aos requisitos da missão. Revise e tente novamente!',
-        'defeat'
+        'defeat',
       );
       battleBtn.classList.remove('is-disabled');
       battleBtn.disabled = false;
@@ -1439,7 +1440,7 @@ document.addEventListener('DOMContentLoaded', () => {
       codeToLoad = savedLevel4Code;
       logMessage(
         'Seu código do Nível 4 (Polimorfismo) foi restaurado.',
-        'info'
+        'info',
       );
     }
     // Caso padrão: Reconstrói a partir do Nível 0 se não houver rascunho específico
@@ -1509,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (levelIndex >= 2) {
         codeToLoad = codeToLoad.replace(
           'const meuMonstro = new Monstro',
-          '// const meuMonstro = new Monstro'
+          '// const meuMonstro = new Monstro',
         );
       }
     }
@@ -1538,7 +1539,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           logMessage(
             'ERRO: Código de criação não encontrado. Volte ao cientista.',
-            'defeat'
+            'defeat',
           );
           showMapScreenFromGame();
           return;
@@ -1554,7 +1555,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         logMessage(
           'Batalha Nível 0 (Goblin) iniciando com seu código criado...',
-          'info'
+          'info',
         );
         codeEditor.value = codeToLoad;
 
@@ -1564,7 +1565,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chosenPooketmonData) {
           description = description.replace(
             '${pooket.evolutionName}',
-            chosenPooketmonData.evolutionName
+            chosenPooketmonData.evolutionName,
           );
         }
 
@@ -1585,7 +1586,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handlePooketmonChoice(pooketId) {
     chosenPooketmonData = JSON.parse(
-      JSON.stringify(STARTER_POOKETMONS[pooketId])
+      JSON.stringify(STARTER_POOKETMONS[pooketId]),
     );
     startScreen.classList.add('hidden');
     showCreationScreen();
